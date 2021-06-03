@@ -4,7 +4,6 @@ export default function(client: Discord.Client) {
     client.on("ready", () => {
         client.user.setActivity("Jan Dziendziel");
         console.log("Loaded bot.ts");
-        console.log("-----------------------------------------------------");
     });
 
     client.login(process.env.BOT_TOKEN);
