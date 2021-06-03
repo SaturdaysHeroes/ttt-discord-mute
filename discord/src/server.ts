@@ -1,12 +1,51 @@
+import * as Discord from "discord.js";
 import express from "express";
 import {Request, Response} from "express";
-import bodyParser from "body-parser";
 
 export default function(client) {
     const app = express();
-    app.use(bodyParser.json());
 
-    app.listen(process.env.APP_PORT_HTTP, () => {
-        console.log("Loaded bot.ts");
+    app.listen(process.env.SERVER_PORT, () => {
+        console.log("Loaded server.ts");
+    });
+
+    app.post("/mute", (req: Request, res: Response) => {
+        let userId = req.query.user; 
+        
+        if (!userId) {
+            res.send("Missing User");
+            return;
+        };
+
+        let guild = client.guilds.cache.get(process.env.BOT_GUILD);
+        guild.members.fetch({user: userId})
+            .then(async (member: Discord.GuildMember) => {
+                member.voice.setMute(true);
+                res.sendStatus(200);
+            })
+            .catch(err => {
+                console.log(`[ERROR] ${err}`);
+                res.sendStatus(400)
+            })
+    });
+
+    app.post("/unmute", (req: Request, res: Response) => {
+        let userId = req.query.user; 
+        
+        if (!userId) {
+            res.send("Missing User");
+            return;
+        };
+
+        let guild = client.guilds.cache.get(process.env.BOT_GUILD);
+        guild.members.fetch({user: userId})
+            .then(async (member: Discord.GuildMember) => {
+                member.voice.setMute(false);
+                res.sendStatus(200);
+            })
+            .catch(err => {
+                console.log(`[ERROR] ${err}`);
+                res.sendStatus(400);
+            })
     });
 };
